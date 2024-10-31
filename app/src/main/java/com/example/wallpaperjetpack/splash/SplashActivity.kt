@@ -1,5 +1,10 @@
 package com.example.wallpaperjetpack.splash
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,9 +44,11 @@ import kotlinx.coroutines.delay
 fun SplashScreenView(navController: NavController) {
     var isCardVisible by remember { mutableStateOf(false) }
 
+    var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         delay(2000)
         isCardVisible = true
+        visible = true
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -59,15 +66,22 @@ fun SplashScreenView(navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
-            if (isCardVisible) { // Show card when isCardVisible is true
-                CardSlide(navController)
+            AnimatedVisibility(visible = visible,
+                enter = slideInVertically(initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
+                ) + fadeIn(
+                    animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing))
+            ) {
+                if (isCardVisible) {
+                    CardSlide(navController)
+                }
             }
         }
     }
 }
+
 @Composable
 fun CardSlide(navController: NavController) {
-
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
